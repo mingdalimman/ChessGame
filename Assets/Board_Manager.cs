@@ -9,7 +9,7 @@ public class Board_Manager : MonoBehaviour
     public GameObject chessSquareDarkPrefab;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         chessSquares = new GameObject[8,8];
 
@@ -45,7 +45,7 @@ public class Board_Manager : MonoBehaviour
     }
     public GameObject GetChessSquare(int[] startPos)
     {
-        return null;// chessSquares[startPos[0], startPos[1]];
+        return chessSquares[startPos[0], startPos[1]];
     }
     
 }
