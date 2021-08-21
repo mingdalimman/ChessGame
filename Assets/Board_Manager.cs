@@ -8,6 +8,8 @@ public class Board_Manager : MonoBehaviour
     public GameObject chessSquarePrefab;
     public GameObject chessSquareDarkPrefab;
 
+    public ChessPieceBehavior selectedChessPiece;
+
     // Start is called before the first frame update
     void Awake()
     {

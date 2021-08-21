@@ -6,7 +6,7 @@ public class Chess_Square_Behavior : MonoBehaviour
 {
     private void OnMouseDown()
     {
-        print(GetComponent<Chess_Square_Info>().chessSquareId);
+
 
         GameObject.FindObjectOfType<ChessPieceBehavior>().MovePiece(transform.position);
     }
