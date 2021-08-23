@@ -8,7 +8,9 @@ public class ChessPieceBehavior : MonoBehaviour
     public int startPosX;
     public int startPosY;
     public enum chessPieceType { pawn, rook, knight, bishop, queen, king };
+    public enum chessPieceColor { white, black };
     public chessPieceType chessPiece;
+    public chessPieceColor chessColor;
 
     public List<int[]> legalMoves;
 
@@ -84,29 +86,77 @@ public class ChessPieceBehavior : MonoBehaviour
                 legalMoves.Add(new int[] { currentSquarePos[0] - diagonal, currentSquarePos[1] + diagonal });
             }
 
-            print("Moves Count " + legalMoves.Count + " mooooooooooooooo I want fooooooooooooooood and legooooooooo merch and a pet pigggggggyyyyyy");
+            print("mooooooooooooooo I want fooooooooooooooood and legooooooooo merch and a pet pigggggggyyyyyy");
         }
 
         if (chessPiece == chessPieceType.queen)
         {
             // print(currentChessSquare.name);
             int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
-            for (int diagonal = 0; diagonal < 8; diagonal++)
+            for (int offset = 0; offset < 8; offset++)
             {
-                legalMoves.Add(new int[] { currentSquarePos[0] + diagonal, currentSquarePos[1] + diagonal });
-                legalMoves.Add(new int[] { currentSquarePos[0] - diagonal, currentSquarePos[1] - diagonal });
-                legalMoves.Add(new int[] { currentSquarePos[0] + diagonal, currentSquarePos[1] - diagonal });
-                legalMoves.Add(new int[] { currentSquarePos[0] - diagonal, currentSquarePos[1] + diagonal });
+                legalMoves.Add(new int[] { currentSquarePos[0] + offset, currentSquarePos[1] + offset });
+                legalMoves.Add(new int[] { currentSquarePos[0] - offset, currentSquarePos[1] - offset });
+                legalMoves.Add(new int[] { currentSquarePos[0] + offset, currentSquarePos[1] - offset });
+                legalMoves.Add(new int[] { currentSquarePos[0] - offset, currentSquarePos[1] + offset });
 
-                legalMoves.Add(new int[] { currentSquarePos[0] + diagonal, currentSquarePos[1]});
-                legalMoves.Add(new int[] { currentSquarePos[0] - diagonal, currentSquarePos[1]});
-                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + diagonal});
-                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - diagonal});
+                legalMoves.Add(new int[] { currentSquarePos[0] + offset, currentSquarePos[1]});
+                legalMoves.Add(new int[] { currentSquarePos[0] - offset, currentSquarePos[1]});
+                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + offset });
+                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - offset });
             }
+        }
+
+        if (chessPiece == chessPieceType.king)
+        {
+            // print(currentChessSquare.name);
+            int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
+            {
+                legalMoves.Add(new int[] { currentSquarePos[0] + 1, currentSquarePos[1] + 1 });
+                legalMoves.Add(new int[] { currentSquarePos[0] - 1, currentSquarePos[1] - 1 });
+                legalMoves.Add(new int[] { currentSquarePos[0] + 1, currentSquarePos[1] - 1 });
+                legalMoves.Add(new int[] { currentSquarePos[0] - 1, currentSquarePos[1] + 1 });
+
+                legalMoves.Add(new int[] { currentSquarePos[0] + 1, currentSquarePos[1] });
+                legalMoves.Add(new int[] { currentSquarePos[0] - 1, currentSquarePos[1] });
+                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + 1 });
+                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - 1 });
+            }
+        }
+
+        if (chessPiece == chessPieceType.rook)
+        {
+            // print(currentChessSquare.name);
+            int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
+            for (int offset = 0; offset < 8; offset++)
+            {
+
+                legalMoves.Add(new int[] { currentSquarePos[0] + offset, currentSquarePos[1] });
+                legalMoves.Add(new int[] { currentSquarePos[0] - offset, currentSquarePos[1] });
+                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + offset });
+                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - offset });
+            }
+        }
+
+        if (chessPiece == chessPieceType.knight)
+        {
+            // print(currentChessSquare.name);
+            int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
+            legalMoves.Add(new int[] { currentSquarePos[0]+ 1, currentSquarePos[1] + 2});
+            legalMoves.Add(new int[] { currentSquarePos[0]- 1, currentSquarePos[1] + 2 });
+            legalMoves.Add(new int[] { currentSquarePos[0] + 1, currentSquarePos[1] + -2 });
+            legalMoves.Add(new int[] { currentSquarePos[0] - 1, currentSquarePos[1] + -2 });
+            legalMoves.Add(new int[] { currentSquarePos[0] + 2, currentSquarePos[1] + 1 });
+            legalMoves.Add(new int[] { currentSquarePos[0] + 2, currentSquarePos[1] - 1 });
+            legalMoves.Add(new int[] { currentSquarePos[0] - 2, currentSquarePos[1] + 1 });
+            legalMoves.Add(new int[] { currentSquarePos[0] - 2, currentSquarePos[1] - 1 });
+
         }
 
         HighlightLegalMoves();
     }
+
+
 
     void HighlightLegalMoves()
     {

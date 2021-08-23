@@ -8,7 +8,7 @@ public class Chess_Square_Behavior : MonoBehaviour
     {
 
 
-        GameObject.FindObjectOfType<ChessPieceBehavior>().MovePiece(transform.position);
+        GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece.MovePiece(transform.position);
     }
 
     // Start is called before the first frame update

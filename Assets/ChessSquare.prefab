@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de85c7ffd770e4c65be2937a5b6ae8c3, type: 2}
+  - {fileID: 2100000, guid: 26a2469b7a53a4636847d043f8124868, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5b7aa48332b44462b43f6e3232be6ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chessSquareId: A1
+  chessSquareId: 
 --- !u!114 &2220190613445199639
 MonoBehaviour:
   m_ObjectHideFlags: 0

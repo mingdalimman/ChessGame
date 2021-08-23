@@ -10,6 +10,8 @@ public class Board_Manager : MonoBehaviour
 
     public ChessPieceBehavior selectedChessPiece;
 
+    public ChessPieceBehavior.chessPieceColor currentTurnColor;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -45,6 +47,19 @@ public class Board_Manager : MonoBehaviour
         }
 
     }
+
+    public void SwitchTurn()
+    {
+        if(currentTurnColor == ChessPieceBehavior.chessPieceColor.white)
+        {
+            currentTurnColor = ChessPieceBehavior.chessPieceColor.black;
+        }
+        else
+        {
+            currentTurnColor = ChessPieceBehavior.chessPieceColor.white;
+        }
+    }
+
     public GameObject GetChessSquare(int[] startPos)
     {
         return chessSquares[startPos[0], startPos[1]];
