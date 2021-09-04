@@ -24,6 +24,8 @@ public class ChessPieceBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GetComponent<Rigidbody>().isKinematic = true;
+
         highlights = new List<GameObject>();
 
         legalMoves = new List<int[]>();
@@ -36,7 +38,7 @@ public class ChessPieceBehavior : MonoBehaviour
 
     }
 
-    public void MovePiece(Vector3 squarepos)
+    public bool MovePiece(Vector3 squarepos)
     {
         print("clicked on " + squarepos.x + " " + squarepos.z);
 
@@ -51,10 +53,13 @@ public class ChessPieceBehavior : MonoBehaviour
                 currentChessSquare = GameObject.FindObjectOfType<Board_Manager>().GetChessSquare(new int[] { (int)squarepos.x, (int)squarepos.z });
                 GameObject.FindObjectOfType<Board_Manager>().SwitchTurn();
                 ResetLegalMoves();
-                return;
+                return true;
             }
         }
         print("Apologies, IDIOT, but that is not a legal move and unless you intend to go to the chess courts, please choose an actually legal move, IDIOT.");
+
+        return false;
+
     }
 
     void SetStartPos()
@@ -205,5 +210,31 @@ public class ChessPieceBehavior : MonoBehaviour
             GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece = this;
             SetLegalMoves();
         }
+        else
+        {
+            bool captured = false;
+            captured = GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece.MovePiece(new Vector3(currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[0], 1f, currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[1]));
+
+            if (captured)
+            {
+                GetComponent<Rigidbody>().isKinematic = false;
+                GetComponent<Rigidbody>().useGravity = true;
+                GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(2, 4), Random.Range(8, 12), Random.Range(2, 4)));
+
+                StartCoroutine("DestroyPiece");
+            }
+
+            //GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece.MovePiece(new Vector3(currentChessSquare.GetComponent<Chess_Square_Info>))
+            //Destroy(gameObject);
+        }
+
+
+
+    }
+
+    IEnumerator DestroyPiece()
+    {
+        yield return new WaitForSeconds(2);
+        Destroy(gameObject);
     }
 }
