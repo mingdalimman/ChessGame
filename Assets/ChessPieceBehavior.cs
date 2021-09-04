@@ -17,6 +17,8 @@ public class ChessPieceBehavior : MonoBehaviour
     public GameObject highlightEffectPrefab;
         List<GameObject> highlights;
 
+    private bool isFirstTurn = true;
+
     GameObject currentChessSquare;
 
     // Start is called before the first frame update
@@ -45,8 +47,10 @@ public class ChessPieceBehavior : MonoBehaviour
             if (squarepos.x == movePos[0] && squarepos.z == movePos[1])
             {
                 transform.position = new Vector3(squarepos.x, 1f, squarepos.z);
+                isFirstTurn = false;
                 currentChessSquare = GameObject.FindObjectOfType<Board_Manager>().GetChessSquare(new int[] { (int)squarepos.x, (int)squarepos.z });
-                SetLegalMoves();
+                GameObject.FindObjectOfType<Board_Manager>().SwitchTurn();
+                ResetLegalMoves();
                 return;
             }
         }
@@ -59,25 +63,51 @@ public class ChessPieceBehavior : MonoBehaviour
         transform.position = new Vector3(currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[0], 1f, currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[1]);
     }
 
-    void SetLegalMoves()
+    void ResetLegalMoves()
     {
         foreach (ChessPieceBehavior chessPiece in FindObjectsOfType<ChessPieceBehavior>())
         {
             chessPiece.legalMoves.Clear();
             chessPiece.HighlightLegalMoves();
         }
+    }
+
+    void SetLegalMoves()
+    {
+        int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
+
+        ResetLegalMoves();
 
         if (chessPiece == chessPieceType.pawn)
         {
-            // print(currentChessSquare.name);
-            int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
-            legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + 1 });
-            legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + 2 });
+            if (chessColor == chessPieceColor.white)
+            {
+                if (isFirstTurn)
+                {
+                    legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + 1 });
+                    legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + 2 });
+                }
+                else
+                {
+                    legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + 1 });
+                }
+            }
+            else
+            {
+                if (isFirstTurn)
+                {
+                    legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - 1 });
+                    legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - 2 });
+                }
+                else
+                {
+                    legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - 1 });
+                }
+            }
         }
         if (chessPiece == chessPieceType.bishop)
         {
-            print("Shetting Bhishop Mhoves");//currentChessSquare.name);
-            int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
+            print("Setting Bhishop Moves");//currentChessSquare.name);
             for (int diagonal = 0; diagonal < 8; diagonal++)
             {
                 legalMoves.Add(new int[] { currentSquarePos[0] + diagonal, currentSquarePos[1] + diagonal });
@@ -92,7 +122,6 @@ public class ChessPieceBehavior : MonoBehaviour
         if (chessPiece == chessPieceType.queen)
         {
             // print(currentChessSquare.name);
-            int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
             for (int offset = 0; offset < 8; offset++)
             {
                 legalMoves.Add(new int[] { currentSquarePos[0] + offset, currentSquarePos[1] + offset });
@@ -110,7 +139,6 @@ public class ChessPieceBehavior : MonoBehaviour
         if (chessPiece == chessPieceType.king)
         {
             // print(currentChessSquare.name);
-            int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
             {
                 legalMoves.Add(new int[] { currentSquarePos[0] + 1, currentSquarePos[1] + 1 });
                 legalMoves.Add(new int[] { currentSquarePos[0] - 1, currentSquarePos[1] - 1 });
@@ -127,7 +155,6 @@ public class ChessPieceBehavior : MonoBehaviour
         if (chessPiece == chessPieceType.rook)
         {
             // print(currentChessSquare.name);
-            int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
             for (int offset = 0; offset < 8; offset++)
             {
 
@@ -141,7 +168,6 @@ public class ChessPieceBehavior : MonoBehaviour
         if (chessPiece == chessPieceType.knight)
         {
             // print(currentChessSquare.name);
-            int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
             legalMoves.Add(new int[] { currentSquarePos[0]+ 1, currentSquarePos[1] + 2});
             legalMoves.Add(new int[] { currentSquarePos[0]- 1, currentSquarePos[1] + 2 });
             legalMoves.Add(new int[] { currentSquarePos[0] + 1, currentSquarePos[1] + -2 });
@@ -173,7 +199,11 @@ public class ChessPieceBehavior : MonoBehaviour
 
     private void OnMouseDown()
     {
-        GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece = this;
-        SetLegalMoves();
+        
+        if(chessColor == GameObject.FindObjectOfType<Board_Manager>().currentTurnColor)
+        {
+            GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece = this;
+            SetLegalMoves();
+        }
     }
 }
