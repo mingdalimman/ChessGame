@@ -8,18 +8,20 @@ public class ChessPieceBehavior : MonoBehaviour
     public int startPosX;
     public int startPosY;
     public enum chessPieceType { pawn, rook, knight, bishop, queen, king };
-    public enum chessPieceColor { white, black };
+    public enum chessPieceColor { White, Black };
     public chessPieceType chessPiece;
     public chessPieceColor chessColor;
 
     public List<int[]> legalMoves;
 
     public GameObject highlightEffectPrefab;
-        List<GameObject> highlights;
+    List<GameObject> highlights;
 
     private bool isFirstTurn = true;
 
     GameObject currentChessSquare;
+
+    bool captured = false;
 
     // Start is called before the first frame update
     void Start()
@@ -79,13 +81,24 @@ public class ChessPieceBehavior : MonoBehaviour
 
     void SetLegalMoves()
     {
+        ChessPieceBehavior[] ChessPieces = GameObject.FindObjectsOfType<ChessPieceBehavior>();
         int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
+
+        ChessPieceBehavior[] allChessPieces = GameObject.FindObjectsOfType<ChessPieceBehavior>();
 
         ResetLegalMoves();
 
+        int back = -1;
+        int left = -1;
+
+        int front = 1;
+        int right = 1;
+
+        int center = 0;
+
         if (chessPiece == chessPieceType.pawn)
         {
-            if (chessColor == chessPieceColor.white)
+            if (chessColor == chessPieceColor.White)
             {
                 if (isFirstTurn)
                 {
@@ -112,33 +125,25 @@ public class ChessPieceBehavior : MonoBehaviour
         }
         if (chessPiece == chessPieceType.bishop)
         {
-            print("Setting Bhishop Moves");//currentChessSquare.name);
-            for (int diagonal = 0; diagonal < 8; diagonal++)
-            {
-                legalMoves.Add(new int[] { currentSquarePos[0] + diagonal, currentSquarePos[1] + diagonal });
-                legalMoves.Add(new int[] { currentSquarePos[0] - diagonal, currentSquarePos[1] - diagonal });
-                legalMoves.Add(new int[] { currentSquarePos[0] + diagonal, currentSquarePos[1] - diagonal });
-                legalMoves.Add(new int[] { currentSquarePos[0] - diagonal, currentSquarePos[1] + diagonal });
-            }
+            CheckLegalMovesDirection(right, front, ChessPieces);
+            CheckLegalMovesDirection(right, back, ChessPieces);
+            CheckLegalMovesDirection(left, front, ChessPieces);
+            CheckLegalMovesDirection(left, back, ChessPieces);
 
+            print("Shetting Bhishop Mhoves");
             print("mooooooooooooooo I want fooooooooooooooood and legooooooooo merch and a pet pigggggggyyyyyy");
         }
 
         if (chessPiece == chessPieceType.queen)
         {
-            // print(currentChessSquare.name);
-            for (int offset = 0; offset < 8; offset++)
-            {
-                legalMoves.Add(new int[] { currentSquarePos[0] + offset, currentSquarePos[1] + offset });
-                legalMoves.Add(new int[] { currentSquarePos[0] - offset, currentSquarePos[1] - offset });
-                legalMoves.Add(new int[] { currentSquarePos[0] + offset, currentSquarePos[1] - offset });
-                legalMoves.Add(new int[] { currentSquarePos[0] - offset, currentSquarePos[1] + offset });
-
-                legalMoves.Add(new int[] { currentSquarePos[0] + offset, currentSquarePos[1]});
-                legalMoves.Add(new int[] { currentSquarePos[0] - offset, currentSquarePos[1]});
-                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + offset });
-                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - offset });
-            }
+            CheckLegalMovesDirection(right, front, ChessPieces);
+            CheckLegalMovesDirection(right, back, ChessPieces);
+            CheckLegalMovesDirection(left, front, ChessPieces);
+            CheckLegalMovesDirection(left, back, ChessPieces);
+            CheckLegalMovesDirection(center, front, ChessPieces);
+            CheckLegalMovesDirection(center, back, ChessPieces);
+            CheckLegalMovesDirection(right, center, ChessPieces);
+            CheckLegalMovesDirection(left, center, ChessPieces);
         }
 
         if (chessPiece == chessPieceType.king)
@@ -159,22 +164,17 @@ public class ChessPieceBehavior : MonoBehaviour
 
         if (chessPiece == chessPieceType.rook)
         {
-            // print(currentChessSquare.name);
-            for (int offset = 0; offset < 8; offset++)
-            {
-
-                legalMoves.Add(new int[] { currentSquarePos[0] + offset, currentSquarePos[1] });
-                legalMoves.Add(new int[] { currentSquarePos[0] - offset, currentSquarePos[1] });
-                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + offset });
-                legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - offset });
-            }
+            CheckLegalMovesDirection(center, front, ChessPieces);
+            CheckLegalMovesDirection(center, back, ChessPieces);
+            CheckLegalMovesDirection(right, center, ChessPieces);
+            CheckLegalMovesDirection(left, center, ChessPieces);
         }
 
         if (chessPiece == chessPieceType.knight)
         {
             // print(currentChessSquare.name);
-            legalMoves.Add(new int[] { currentSquarePos[0]+ 1, currentSquarePos[1] + 2});
-            legalMoves.Add(new int[] { currentSquarePos[0]- 1, currentSquarePos[1] + 2 });
+            legalMoves.Add(new int[] { currentSquarePos[0] + 1, currentSquarePos[1] + 2 });
+            legalMoves.Add(new int[] { currentSquarePos[0] - 1, currentSquarePos[1] + 2 });
             legalMoves.Add(new int[] { currentSquarePos[0] + 1, currentSquarePos[1] + -2 });
             legalMoves.Add(new int[] { currentSquarePos[0] - 1, currentSquarePos[1] + -2 });
             legalMoves.Add(new int[] { currentSquarePos[0] + 2, currentSquarePos[1] + 1 });
@@ -204,32 +204,75 @@ public class ChessPieceBehavior : MonoBehaviour
 
     private void OnMouseDown()
     {
-        
-        if(chessColor == GameObject.FindObjectOfType<Board_Manager>().currentTurnColor)
+        if (!captured)
         {
-            GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece = this;
-            SetLegalMoves();
-        }
-        else
-        {
-            bool captured = false;
-            captured = GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece.MovePiece(new Vector3(currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[0], 1f, currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[1]));
-
-            if (captured)
+            if (chessColor == GameObject.FindObjectOfType<Board_Manager>().currentTurnColor)
             {
-                GetComponent<Rigidbody>().isKinematic = false;
-                GetComponent<Rigidbody>().useGravity = true;
-                GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(2, 4), Random.Range(8, 12), Random.Range(2, 4)));
-
-                StartCoroutine("DestroyPiece");
+                GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece = this;
+                SetLegalMoves();
             }
+            else
+            {
+                captured = false;
+                captured = GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece.MovePiece(new Vector3(currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[0], 1f, currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[1]));
 
-            //GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece.MovePiece(new Vector3(currentChessSquare.GetComponent<Chess_Square_Info>))
-            //Destroy(gameObject);
+                if (captured)
+                {
+                    GetComponent<Rigidbody>().isKinematic = false;
+                    GetComponent<Rigidbody>().useGravity = true;
+                    GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(6, 20), Random.Range(12, 16), Random.Range(6, 20)));
+
+                    StartCoroutine("DestroyPiece");
+                }
+
+                //GameObject.FindObjectOfType<Board_Manager>().selectedChessPiece.MovePiece(new Vector3(currentChessSquare.GetComponent<Chess_Square_Info>))
+                //Destroy(gameObject);
+            }
         }
 
 
+    }
 
+    bool CheckBlocked(int[] pos, ChessPieceBehavior[] pieces, out chessPieceColor color)
+    {
+        foreach (ChessPieceBehavior piece in pieces)
+        {
+            if (pos[0] == piece.currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[0])
+            {
+                if (pos[1] == piece.currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[1])
+                {
+                    color = piece.chessColor;
+                    return true;
+                }
+            }
+        }
+        color = chessPieceColor.Black;
+        return false;
+    }
+
+    void CheckLegalMovesDirection(int directionX, int directionY, ChessPieceBehavior[] pieces)
+    {
+        int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
+        for (int step = 1; step < 8; step++)
+        {
+            int offsetX = step * directionX;
+            int offsetY = step * directionY;
+
+            chessPieceColor colorChecked;
+            if (CheckBlocked(new int[] { currentSquarePos[0] + offsetX, currentSquarePos[1] + offsetY }, pieces, out colorChecked))
+            {
+
+                if (colorChecked != chessColor)
+                {
+                    legalMoves.Add(new int[] { currentSquarePos[0] + offsetX, currentSquarePos[1] + offsetY });
+                }
+                break;
+            }
+            else
+            {
+                legalMoves.Add(new int[] { currentSquarePos[0] + offsetX, currentSquarePos[1] + offsetY });
+            }
+        }
     }
 
     IEnumerator DestroyPiece()
