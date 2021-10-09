@@ -109,6 +109,9 @@ public class ChessPieceBehavior : MonoBehaviour
                 {
                     legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] + 1 });
                 }
+
+                CheckPawnLegalMove(right, front, ChessPieces);
+                CheckPawnLegalMove(left, front, ChessPieces);
             }
             else
             {
@@ -121,6 +124,9 @@ public class ChessPieceBehavior : MonoBehaviour
                 {
                     legalMoves.Add(new int[] { currentSquarePos[0], currentSquarePos[1] - 1 });
                 }
+
+                CheckPawnLegalMove(right, back, ChessPieces);
+                CheckPawnLegalMove(left, back, ChessPieces);
             }
         }
         if (chessPiece == chessPieceType.bishop)
@@ -233,7 +239,7 @@ public class ChessPieceBehavior : MonoBehaviour
 
     }
 
-    bool CheckBlocked(int[] pos, ChessPieceBehavior[] pieces, out chessPieceColor color)
+    bool CheckBlocked(int[] pos, ChessPieceBehavior[] pieces, out ChessPieceBehavior foundPiece)
     {
         foreach (ChessPieceBehavior piece in pieces)
         {
@@ -241,12 +247,12 @@ public class ChessPieceBehavior : MonoBehaviour
             {
                 if (pos[1] == piece.currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId[1])
                 {
-                    color = piece.chessColor;
+                    foundPiece = piece;
                     return true;
                 }
             }
         }
-        color = chessPieceColor.Black;
+        foundPiece = null;
         return false;
     }
 
@@ -258,12 +264,16 @@ public class ChessPieceBehavior : MonoBehaviour
             int offsetX = step * directionX;
             int offsetY = step * directionY;
 
-            chessPieceColor colorChecked;
-            if (CheckBlocked(new int[] { currentSquarePos[0] + offsetX, currentSquarePos[1] + offsetY }, pieces, out colorChecked))
+            ChessPieceBehavior piece;
+            if (CheckBlocked(new int[] { currentSquarePos[0] + offsetX, currentSquarePos[1] + offsetY }, pieces, out piece))
             {
 
-                if (colorChecked != chessColor)
+                if (piece.chessColor != chessColor)
                 {
+                    if(piece.chessPiece == chessPieceType.king)
+                    {
+                        FindObjectOfType<Board_Manager>().check();
+                    }
                     legalMoves.Add(new int[] { currentSquarePos[0] + offsetX, currentSquarePos[1] + offsetY });
                 }
                 break;
@@ -279,5 +289,24 @@ public class ChessPieceBehavior : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         Destroy(gameObject);
+    }
+
+    void CheckPawnLegalMove(int offsetX, int offsetY, ChessPieceBehavior[] pieces)
+    {
+        //find current pawn position
+        int[] currentSquarePos = currentChessSquare.GetComponent<Chess_Square_Info>().chessSquareId;
+
+        ChessPieceBehavior chessPiece;
+
+        //Add offset to position
+        int[] checkedSquare = new int[] { currentSquarePos[0] + offsetX, currentSquarePos[1] + offsetY };
+
+        if (CheckBlocked(checkedSquare, pieces, out chessPiece))
+        {
+            if (chessPiece.chessColor != chessColor)
+            {
+                legalMoves.Add(checkedSquare);
+            }
+        }
     }
 }

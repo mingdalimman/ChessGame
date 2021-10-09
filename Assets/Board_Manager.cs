@@ -14,7 +14,7 @@ public class Board_Manager : MonoBehaviour
     public ChessPieceBehavior.chessPieceColor currentTurnColor;
 
     public TextMeshProUGUI turnText;
-
+    public GameObject infoText;
     List<ChessPieceBehavior.chessPieceType> capturedWhitePieces;
     List<ChessPieceBehavior.chessPieceType> capturedBlackPieces;
 
@@ -55,6 +55,19 @@ public class Board_Manager : MonoBehaviour
         }
 
     }
+
+    public void check()
+    {
+        infoText.SetActive(true);
+        Invoke("TurnOffText",2);
+
+    }
+
+    public void TurnOffText()
+    {
+        infoText.SetActive(false);
+    }
+
     public void AddCapturedPiece(ChessPieceBehavior.chessPieceType capturedPiece)
     {
         if (currentTurnColor == ChessPieceBehavior.chessPieceColor.White)
